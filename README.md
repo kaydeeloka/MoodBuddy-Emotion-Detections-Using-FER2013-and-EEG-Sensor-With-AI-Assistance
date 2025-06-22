@@ -1,6 +1,6 @@
 # MOODBUDDY: EMOTION DETECTION USING FACIAL EXPRESSIONS RECOGNITION \& EEG SENSOR WITH AI ASSISTANCE
 
-MoodBuddy is a cross-platform application that combines facial emotion recognition and EEG (brainwave) data to analyze and track user moods, with AI-powered insights and chatbot support.
+MoodBuddy is a mobile application designed to support mental health by helping users track and better understand their emotional well-being. The app uses two separate emotion detection methods: Facial Emotion Recognition (FER), which applies a deep learning model to classify facial expressions, and EEG analysis, where brainwave signals from the Emotiv Epoch X headset (alpha, beta, theta, gamma) are evaluated using a lightweight, threshold-based classification method. These two sources are analyzed independently, and their results are combined to determine the user's final mood, which is then logged into a calendar-based mood tracker with optional notes. 
 
 ---
 
