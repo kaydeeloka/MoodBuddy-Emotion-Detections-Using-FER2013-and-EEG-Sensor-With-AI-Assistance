@@ -1,50 +1,126 @@
-# Welcome to your Expo app 👋
+# MOODBUDDY: EMOTION DETECTION USING FACIAL EXPRESSIONS RECOGNITION \& EEG SENSOR WITH AI ASSISTANCE
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+MoodBuddy is a cross-platform application that combines facial emotion recognition and EEG (brainwave) data to analyze and track user moods, with AI-powered insights and chatbot support.
 
-## Get started
+---
 
-1. Install dependencies
+## Directory Structure
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+/moodbuddy/
+├── api/                   # FastAPI backend for mood, user, EEG, and chatbot APIs
+│   ├── db/                # Database models and schemas
+│   ├── eegsensor/         # Cortex API EEG data collection and processing
+│   ├── fer2013/           # Facial emotion recognition model and scripts
+│   ├── routes/            # API route handlers
+│   └── main.py            # Backend entry point
+├── app/                   # React Native frontend (Expo)
+│   ├── index.tsx          # Initial routing, redirects to login
+│   ├── login.tsx          # Login screen
+│   ├── signup.tsx         # Signup screen
+│   ├── scan-face.tsx      # Facial scan page
+│   ├── scan-result.tsx    # Combined result and add-to-calendar
+│   ├── calendar.tsx       # Mood calendar
+│   ├── insights.tsx       # Mood insights
+│   └── (tabs)/            # Tab navigation
+├── components/            # Reusable UI components
+├── config/
+│   └── local.ts           # Configuration for frontend API endpoints—sets the base URL (typically localhost in development) and allows customization of other backend API endpoints.
+└── ...
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## Installation
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 1. Backend Setup
 
-## Join the community
+```bash
+cd api
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+# Set up MySQL and configure the connection in your backend settings 
+#make sure you do all step in the configuration section below
+uvicorn main:app --reload
+```
+---
 
-Join our community of developers creating universal apps.
+## Configuration
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+1. **API Base URL:**
+    - Change the base URL in `config/local.ts` to your machine’s local IP address so your mobile device can connect to the backend.
+    - Find your IP address with `ipconfig` (Windows) or `ifconfig` / `ipconfig getifaddr en0` (macOS).
+    - Example:
+
+```ts
+export const BASE_URL = 'http://192.168.x.x:8000';
+```
+
+2. **Gemini API Key:**
+    - Get your Gemini API key from [Google AI Studio](https://ai.google.dev/gemini-api/docs/api-key).
+    - Add it to your environment variables or config.
+3. **Emotiv Cortex API Credentials:**
+    - Register as a developer at [Emotiv Developer](https://www.emotiv.com/pages/developer#gRuxdoJ5qg).
+    - Obtain your `client_id` and `client_secret` and add them to your config.
+4. **MySQL Database:**
+    - Start MySQL and ensure the `mood_db` database exists.
+    - Run the provided SQL scripts to create the necessary tables.
+
+---
+
+### 2. Frontend Setup
+
+```bash
+cd app
+npm install
+# or
+yarn install
+```
+
+
+### 3. Expo Go (Mobile)
+
+- Install [Expo Go](https://expo.dev/client) on your mobile device.
+- Run the app:
+
+```bash
+npx expo start
+```
+
+- Scan the QR code to launch the app.
+
+## Usage Flow
+
+1. **Initial Routing \& Authentication**
+    - Scanning the Expo QR code loads `index.tsx`, which redirects to `/login`.
+    - Users must log in to access the app. If no account exists, they can sign up.
+    - All authentication and user data are connected to the MySQL backend.
+2. **Dual-Input Mood Detection**
+    - Users can select a date in the calendar or start a new mood entry.
+    - The app guides the user through EEG data collection (using the Emotiv Epoch X headset and Cortex API) and facial emotion scanning.
+    - EEG results are stored temporarily in AsyncStorage. After scanning, the combined result is shown on the scan-result page.
+    - **Manual or automatic mood entries:** Only manual entries or those added via the "Add to Calendar" button are sent to the backend and stored in MySQL.
+3. **Mood Calendar \& Insights**
+    - The app fetches all mood records from MySQL to display in the calendar and generate insights (trends, statistics, visualizations).
+    - Users can manually add moods directly in the calendar; these are immediately stored in MySQL.
+4. **Chatbot**
+    - The chatbot uses mood data and user context from MySQL to provide personalized responses.
+
+---
+
+## Error Handling
+
+- **Login/Signup errors:** Alerts for invalid credentials or registration issues.
+- **EEG/Facial scan errors:** User is notified if device connection or analysis fails.
+- **Database/API errors:** App displays error messages for failed backend interactions.
+
+---
+
+## Troubleshooting \& Notes
+
+- Make sure to run MySQL Workbench, then the backend server, then Expo (frontend) in that order.
+- Ensure all API keys and credentials are set correctly before running the app.
+- Only authenticated users can access main app features.
+- "Edit user", "update/delete mood", "add to calendar"-in scan result features are present in the UI but not yet fully implemented.
