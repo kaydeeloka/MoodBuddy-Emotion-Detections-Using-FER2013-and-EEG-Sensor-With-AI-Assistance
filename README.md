@@ -67,6 +67,7 @@ export const BASE_URL = 'http://192.168.x.x:8000';
 4. **MySQL Database:**
     - Start MySQL and ensure the `mood_db` database exists.
     - Run the provided SQL scripts to create the necessary tables.
+    - You can run and use the mood_db.sql inside api/db, There is also db example for you to test your database.
 
 ---
 
